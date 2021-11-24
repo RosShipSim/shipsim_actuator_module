@@ -10,7 +10,7 @@ from rclpy.node import Node
 from shipsim_msgs_module.msg import KTControl
 
 
-class ActuatorNode(Node):
+class KtActuatorNode(Node):
     """ActuatorNode."""
 
     u = 0.0
@@ -54,18 +54,18 @@ class ActuatorNode(Node):
             self.dfr = self.dfr.append({"r":add_current_angle},ignore_index=True)
             listr = self.dfr["r"].to_list()
             self.pub_actuator_msg.rudder_angle_degree = listr[len(listr)-30] #3sec delay
-        elif d_current_angle < 0.5:
+        elif d_current_angle < -0.5:
             add_current_angle = current_angle - 0.5
             self.dfr = self.dfr.append({"r":add_current_angle},ignore_index=True)
             listr = self.dfr["r"].to_list()
             self.pub_actuator_msg.rudder_angle_degree = listr[len(listr)-30] #3sec delay
 
         self.pub_actuator.publish(self.pub_actuator_msg)
-        self.get_logger().info('ActuatorNode Publishing: u="%s", rudder_angle="%s"'% (self.pub_actuator_msg.u, self.pub_actuator_msg.rudder_angle_degree))
+        self.get_logger().info('KT ActuatorNode Publishing: u="%s", rudder_angle="%s"'% (self.pub_actuator_msg.u, self.pub_actuator_msg.rudder_angle_degree))
 
     def listener_callback(self, msg):
         """listener_callback."""
-        self.get_logger().info('ActuatorNode heard: u="%s", rudder_angle="%s"'% (msg.u, msg.rudder_angle_degree))
+        self.get_logger().info('KT ActuatorNode heard: u="%s", rudder_angle="%s"'% (msg.u, msg.rudder_angle_degree))
         self.u = msg.u
         self.rudder_angle_degree = msg.rudder_angle_degree
 
@@ -73,7 +73,7 @@ class ActuatorNode(Node):
 def main(args=None):
     """Run main."""
     rclpy.init(args=args)
-    node = ActuatorNode()
+    node = KtActuatorNode()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
