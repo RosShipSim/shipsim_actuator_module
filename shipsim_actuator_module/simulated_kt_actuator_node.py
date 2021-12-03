@@ -24,13 +24,23 @@ class KtActuatorNode(Node):
     dfr = pd.DataFrame(index=range(30),columns=["r"])#3sec delay
     dfr.fillna(0, inplace=True) 
 
-    def __init__(self, publish_address="/ship1/actuator", timer_period=0.1):
+    def __init__(self):
         """init."""
-        super().__init__("simulated_actuator")
-        self.delta_time = timer_period
-        self.pub_actuator = self.create_publisher(KTControl, publish_address, 1)
-        self.subscription = self.create_subscription(KTControl, "/ship1/control", self.listener_callback, 1)
-        self.timer = self.create_timer(timer_period, self.sender_callback)
+        super().__init__("actuator", namespace="ship1")
+        self.declare_parameter("publish_address", "/ship1/control_input")
+        self.declare_parameter("subscribe_address", "/ship1/cmd_control")
+        self.declare_parameter("delta_time", 0.1)
+
+        publish_address = (
+            self.get_parameter("publish_address").get_parameter_value().string_value
+        )
+        self.publisher = self.create_publisher(KTControl, publish_address, 1)
+        subscribe_address = (
+            self.get_parameter("subscribe_address").get_parameter_value().string_value
+        )
+        self.subscription = self.create_subscription(KTControl, subscribe_address, self.listener_callback, 1)
+        delta_time = self.get_parameter("delta_time").value
+        self.timer = self.create_timer(delta_time, self.sender_callback)
 
     def sender_callback(self):
         """sender_callback."""
