@@ -12,18 +12,18 @@ from shipsim_msgs_module.msg import MMGControl
 class MmgActuatorNode(Node):
     """ActuatorNode."""
 
-    rps = 0.0
-    current_rps = 0.0
-    d_current_rps = 0.0
-    add_current_rps = 0.0
+    n_p = 0.0
+    current_n_p = 0.0
+    d_current_n_p = 0.0
+    add_current_n_p = 0.0
 
     rudder_angle_degree = 0.0
     current_angle = 0.0
     d_current_angle = 0.0
     add_current_angle = 0.0
 
-    dfrps = pd.DataFrame(index=range(1),columns=["rps"])#no delay
-    dfrps.fillna(0, inplace=True) 
+    dfn_p = pd.DataFrame(index=range(1),columns=["n_p"])#no delay
+    dfn_p.fillna(0, inplace=True) 
     dfr = pd.DataFrame(index=range(1),columns=["r"])#no delay
     dfr.fillna(0, inplace=True) 
 
@@ -49,23 +49,23 @@ class MmgActuatorNode(Node):
         """sender_callback."""
         self.pub_actuator_msg = MMGControl()
 
-        listrps = []
-        current_rps = self.dfrps.iloc[-1]['rps']
-        d_current_rps = self.rps - current_rps
-        if abs(d_current_rps) <= 0.5:
-            self.dfrps = self.dfrps.append({"rps":self.rps},ignore_index=True)
-            listrps = self.dfrps["rps"].to_list()
-            self.pub_actuator_msg.rps = listrps[len(listrps)-1]
-        elif d_current_rps > 0.5:
-            add_current_rps = current_rps + 0.5
-            self.dfrps = self.dfrps.append({"rps":add_current_rps},ignore_index=True)
-            listrps = self.dfrps["rps"].to_list()
-            self.pub_actuator_msg.rps = listrps[len(listrps)-1]
-        elif d_current_rps < -0.5:
-            add_current_rps = current_rps - 0.5
-            self.dfrps = self.dfrps.append({"rps":add_current_rps},ignore_index=True)
-            listrps = self.dfrps["rps"].to_list()
-            self.pub_actuator_msg.rps = listrps[len(listrps)-1]
+        listn_p = []
+        current_n_p = self.dfn_p.iloc[-1]['n_p']
+        d_current_n_p = self.n_p - current_n_p
+        if abs(d_current_n_p) <= 0.5:
+            self.dfn_p = self.dfn_p.append({"n_p":self.n_p},ignore_index=True)
+            listn_p = self.dfn_p["n_p"].to_list()
+            self.pub_actuator_msg.n_p = listn_p[len(listn_p)-1]
+        elif d_current_n_p > 0.5:
+            add_current_n_p = current_n_p + 0.5
+            self.dfn_p = self.dfn_p.append({"n_p":add_current_n_p},ignore_index=True)
+            listn_p = self.dfn_p["n_p"].to_list()
+            self.pub_actuator_msg.n_p = listn_p[len(listn_p)-1]
+        elif d_current_n_p < -0.5:
+            add_current_n_p = current_n_p - 0.5
+            self.dfn_p = self.dfn_p.append({"n_p":add_current_n_p},ignore_index=True)
+            listn_p = self.dfn_p["n_p"].to_list()
+            self.pub_actuator_msg.n_p = listn_p[len(listn_p)-1]
 
         listr=[]
         current_angle = self.dfr.iloc[-1]['r']
@@ -86,12 +86,12 @@ class MmgActuatorNode(Node):
             self.pub_actuator_msg.rudder_angle_degree = listr[len(listr)-1]
 
         self.pub_actuator.publish(self.pub_actuator_msg)
-        self.get_logger().info('MMG ActuatorNode Publishing: rps="%s", rudder_angle="%s"'% (self.pub_actuator_msg.rps, self.pub_actuator_msg.rudder_angle_degree))
+        self.get_logger().info('MMG ActuatorNode Publishing: n_p="%s", rudder_angle="%s"'% (self.pub_actuator_msg.n_p, self.pub_actuator_msg.rudder_angle_degree))
 
     def listener_callback(self, msg):
         """listener_callback."""
-        self.get_logger().info('MMG ActuatorNode heard: rps="%s", rudder_angle="%s"'% (msg.rps, msg.rudder_angle_degree))
-        self.rps = msg.rps
+        self.get_logger().info('MMG ActuatorNode heard: n_p="%s", rudder_angle="%s"'% (msg.n_p, msg.rudder_angle_degree))
+        self.n_p = msg.n_p
         self.rudder_angle_degree = msg.rudder_angle_degree
 
 
