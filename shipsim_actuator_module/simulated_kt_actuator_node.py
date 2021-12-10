@@ -70,7 +70,7 @@ class KtActuatorNode(Node):
             listr = self.dfr["r"].to_list()
             self.pub_actuator_msg.rudder_angle_degree = listr[len(listr)-30] #3sec delay
 
-        self.pub_actuator.publish(self.pub_actuator_msg)
+        self.publisher.publish(self.pub_actuator_msg)
         self.get_logger().info('KT ActuatorNode Publishing: u="%s", rudder_angle="%s"'% (self.pub_actuator_msg.u, self.pub_actuator_msg.rudder_angle_degree))
 
     def listener_callback(self, msg):
