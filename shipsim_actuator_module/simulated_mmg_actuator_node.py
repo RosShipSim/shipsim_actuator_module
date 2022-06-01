@@ -30,8 +30,8 @@ class MmgActuatorNode(Node):
     def __init__(self):
         """init."""
         super().__init__("actuator", namespace="ship1")
-        self.declare_parameter("publish_address", "/ship1/control_input")
-        self.declare_parameter("subscribe_address", "/ship1/cmd_control")
+        self.declare_parameter("subscribe_address", "/ship1/control_input")
+        self.declare_parameter("publish_address", "/ship1/cmd_control")
         self.declare_parameter("delta_time", 0.1)
 
         publish_address = (
